@@ -5,8 +5,9 @@ function main() {
 
   const unreadMessages = fetchUnreadMessages();
   unreadMessages.forEach(message => {
+    const text = message.getSubject();
     const blocks = makeBlocks(message);
-    const isSuccess = postMessage(TOKEN, CHANNEL_ID, blocks);
+    const isSuccess = postMessage(TOKEN, CHANNEL_ID, text, blocks);
     if (isSuccess) message.markRead();
   });
 }
@@ -52,13 +53,19 @@ const makeBlocks = (message: GoogleAppsScript.Gmail.GmailMessage) => [
   },
 ];
 
-const postMessage = (token: string, channelId: string, blocks: any) => {
+const postMessage = (
+  token: string,
+  channelId: string,
+  text: string,
+  blocks: any
+) => {
   const url = 'https://slack.com/api/chat.postMessage';
   const formData = {
     icon_emoji: ':e-mail:',
     username: 'EmailBot',
     token,
     channel: channelId,
+    text,
     blocks: JSON.stringify(blocks),
   };
   const options = {
